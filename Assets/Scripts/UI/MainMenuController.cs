@@ -1,28 +1,55 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class MainMenuController : MonoBehaviour
 {
     [Header("Menu Panels")]
-    public GameObject MainButtons;        // BTN_Continue, BTN_NewGame, BTN_Exit
-    public GameObject NewGameSubMenu;     // BTN_LocalCoop, BTN_OnlineCoop
-    public GameObject OnlineSubMenu;      // BTN_CreateRoom, BTN_JoinRoom
+    public GameObject MainButtons;        // BTN_Continue, BTN_NewGame, BTN_Options, BTN_Exit
+    public GameObject NewGameSubMenu;     
+    public GameObject OnlineSubMenu;      
+    public GameObject OptionsPanel;       // Panel Options
 
     [Header("Quit Popup")]
-    public GameObject QuitPopup;          // PanelBG + Text + Buttons
+    public GameObject QuitPopup;          
+
+    [Header("Options Controls")]
+    public Slider Slider_Volume;
+    public TMP_Text Text_Value;
+    public CanvasGroup MainButtonsCanvasGroup; // để vô hiệu hóa click khi Options mở
+
+    private float currentVolume = 0.5f;    // giá trị tạm khi kéo slider
+    private float savedVolume = 0.5f;      // giá trị đã lưu
 
     void Start()
     {
-        // Mặc định hiển thị menu chính, tắt các sub menu và popup
+        // Load âm lượng đã lưu
+        savedVolume = PlayerPrefs.GetFloat("MasterVolume", 0.5f);
+        currentVolume = savedVolume;
+        AudioListener.volume = savedVolume;
+
+        // Khởi tạo UI
+        Slider_Volume.value = savedVolume;
+        Text_Value.text = Mathf.RoundToInt(savedVolume * 100).ToString();
+
+        // Hiển thị menu chính
         MainButtons.SetActive(true);
         NewGameSubMenu.SetActive(false);
         OnlineSubMenu.SetActive(false);
         QuitPopup.SetActive(false);
+        OptionsPanel.SetActive(false);
+
+        // MainButtons tương tác
+        if (MainButtonsCanvasGroup != null)
+        {
+            MainButtonsCanvasGroup.interactable = true;
+            MainButtonsCanvasGroup.blocksRaycasts = true;
+        }
     }
 
     void Update()
     {
-        // ESC lùi menu hoặc đóng popup
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             HandleEscape();
@@ -31,14 +58,18 @@ public class MainMenuController : MonoBehaviour
 
     void HandleEscape()
     {
-        // Nếu QuitPopup đang mở -> ESC = đóng popup
+        if (OptionsPanel.activeSelf)
+        {
+            CloseOptions(false); // Cancel
+            return;
+        }
+
         if (QuitPopup.activeSelf)
         {
             CloseQuitPopup();
             return;
         }
 
-        // ESC lùi từng bước menu
         if (OnlineSubMenu.activeSelf)
         {
             OnlineSubMenu.SetActive(false);
@@ -52,8 +83,6 @@ public class MainMenuController : MonoBehaviour
             MainButtons.SetActive(true);
             return;
         }
-
-        // Nếu đang ở MainButtons → không làm gì
     }
 
     // ========================
@@ -85,7 +114,6 @@ public class MainMenuController : MonoBehaviour
     // ========================
     public void OpenQuitPopup()
     {
-        // Không tắt MainButtons, popup nổi trên menu chính
         QuitPopup.SetActive(true);
     }
 
@@ -97,10 +125,71 @@ public class MainMenuController : MonoBehaviour
     public void ConfirmQuit()
     {
         Application.Quit();
-
 #if UNITY_EDITOR
-        // Dừng play mode trong Editor
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
+    }
+
+    // ========================
+    // OPTIONS
+    // ========================
+    public void OpenOptions()
+    {
+        OptionsPanel.SetActive(true);
+
+        // Vô hiệu hóa click MainButtons khi Options mở
+        if (MainButtonsCanvasGroup != null)
+        {
+            MainButtonsCanvasGroup.interactable = false;
+            MainButtonsCanvasGroup.blocksRaycasts = false;
+        }
+
+        // Khởi tạo slider và text
+        Slider_Volume.value = savedVolume;
+        Text_Value.text = Mathf.RoundToInt(savedVolume * 100).ToString();
+    }
+
+    public void OnVolumeSliderChanged()
+    {
+        currentVolume = Slider_Volume.value;
+        Text_Value.text = Mathf.RoundToInt(currentVolume * 100).ToString();
+        AudioListener.volume = currentVolume;
+    }
+
+    public void SaveOptions()
+    {
+        savedVolume = currentVolume;
+        AudioListener.volume = savedVolume;
+
+        // Lưu vào PlayerPrefs
+        PlayerPrefs.SetFloat("MasterVolume", savedVolume);
+        PlayerPrefs.Save();
+
+        CloseOptions(true);
+    }
+
+    public void CancelOptions()
+    {
+        CloseOptions(false);
+    }
+
+    void CloseOptions(bool saved)
+    {
+        if (!saved)
+        {
+            // Rollback âm lượng nếu Cancel
+            AudioListener.volume = savedVolume;
+            Slider_Volume.value = savedVolume;
+            Text_Value.text = Mathf.RoundToInt(savedVolume * 100).ToString();
+        }
+
+        OptionsPanel.SetActive(false);
+
+        // Cho MainButtons tương tác lại
+        if (MainButtonsCanvasGroup != null)
+        {
+            MainButtonsCanvasGroup.interactable = true;
+            MainButtonsCanvasGroup.blocksRaycasts = true;
+        }
     }
 }
