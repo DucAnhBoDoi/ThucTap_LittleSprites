@@ -7,17 +7,16 @@ public class MainMenuController : MonoBehaviour
 {
     [Header("Menu Panels")]
     public GameObject MainButtons;        // BTN_Continue, BTN_NewGame, BTN_Options, BTN_Exit
-    public GameObject NewGameSubMenu;     
-    public GameObject OnlineSubMenu;      
+    public GameObject NewGameSubMenu;
+    public GameObject OnlineSubMenu;
     public GameObject OptionsPanel;       // Panel Options
 
     [Header("Quit Popup")]
-    public GameObject QuitPopup;          
+    public GameObject QuitPopup;
 
     [Header("Options Controls")]
     public Slider Slider_Volume;
     public TMP_Text Text_Value;
-    public CanvasGroup MainButtonsCanvasGroup; // để vô hiệu hóa click khi Options mở
 
     private float currentVolume = 0.5f;    // giá trị tạm khi kéo slider
     private float savedVolume = 0.5f;      // giá trị đã lưu
@@ -29,7 +28,7 @@ public class MainMenuController : MonoBehaviour
         currentVolume = savedVolume;
         AudioListener.volume = savedVolume;
 
-        // Khởi tạo UI
+        // Khởi tạo UI Options
         Slider_Volume.value = savedVolume;
         Text_Value.text = Mathf.RoundToInt(savedVolume * 100).ToString();
 
@@ -39,13 +38,6 @@ public class MainMenuController : MonoBehaviour
         OnlineSubMenu.SetActive(false);
         QuitPopup.SetActive(false);
         OptionsPanel.SetActive(false);
-
-        // MainButtons tương tác
-        if (MainButtonsCanvasGroup != null)
-        {
-            MainButtonsCanvasGroup.interactable = true;
-            MainButtonsCanvasGroup.blocksRaycasts = true;
-        }
     }
 
     void Update()
@@ -137,13 +129,6 @@ public class MainMenuController : MonoBehaviour
     {
         OptionsPanel.SetActive(true);
 
-        // Vô hiệu hóa click MainButtons khi Options mở
-        if (MainButtonsCanvasGroup != null)
-        {
-            MainButtonsCanvasGroup.interactable = false;
-            MainButtonsCanvasGroup.blocksRaycasts = false;
-        }
-
         // Khởi tạo slider và text
         Slider_Volume.value = savedVolume;
         Text_Value.text = Mathf.RoundToInt(savedVolume * 100).ToString();
@@ -153,7 +138,7 @@ public class MainMenuController : MonoBehaviour
     {
         currentVolume = Slider_Volume.value;
         Text_Value.text = Mathf.RoundToInt(currentVolume * 100).ToString();
-        AudioListener.volume = currentVolume;
+        AudioListener.volume = currentVolume; // áp dụng âm lượng tạm thời
     }
 
     public void SaveOptions()
@@ -184,12 +169,6 @@ public class MainMenuController : MonoBehaviour
         }
 
         OptionsPanel.SetActive(false);
-
-        // Cho MainButtons tương tác lại
-        if (MainButtonsCanvasGroup != null)
-        {
-            MainButtonsCanvasGroup.interactable = true;
-            MainButtonsCanvasGroup.blocksRaycasts = true;
-        }
+        MainButtons.SetActive(true); // bật lại menu chính
     }
 }
