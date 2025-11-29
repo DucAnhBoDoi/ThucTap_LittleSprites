@@ -9,7 +9,7 @@ public class MainMenuController : MonoBehaviour
     public GameObject MainButtons;        // BTN_Continue, BTN_NewGame, BTN_Options, BTN_Exit
     public GameObject NewGameSubMenu;
     public GameObject OnlineSubMenu;
-    public GameObject OptionsPanel;       // Panel Options
+    public GameObject OptionsPanel;
 
     [Header("Quit Popup")]
     public GameObject QuitPopup;
@@ -18,8 +18,8 @@ public class MainMenuController : MonoBehaviour
     public Slider Slider_Volume;
     public TMP_Text Text_Value;
 
-    private float currentVolume = 0.5f;    // giá trị tạm khi kéo slider
-    private float savedVolume = 0.5f;      // giá trị đã lưu
+    private float currentVolume = 0.5f;
+    private float savedVolume = 0.5f;
 
     void Start()
     {
@@ -36,8 +36,8 @@ public class MainMenuController : MonoBehaviour
         MainButtons.SetActive(true);
         NewGameSubMenu.SetActive(false);
         OnlineSubMenu.SetActive(false);
-        QuitPopup.SetActive(false);
         OptionsPanel.SetActive(false);
+        QuitPopup.SetActive(false);
     }
 
     void Update()
@@ -48,11 +48,14 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
+    // =============================================
+    // ESCAPE / BACK LOGIC
+    // =============================================
     void HandleEscape()
     {
         if (OptionsPanel.activeSelf)
         {
-            CloseOptions(false); // Cancel
+            CloseOptions(false); // cancel
             return;
         }
 
@@ -64,22 +67,20 @@ public class MainMenuController : MonoBehaviour
 
         if (OnlineSubMenu.activeSelf)
         {
-            OnlineSubMenu.SetActive(false);
-            NewGameSubMenu.SetActive(true);
+            BackFromOnlineMenu();
             return;
         }
 
         if (NewGameSubMenu.activeSelf)
         {
-            NewGameSubMenu.SetActive(false);
-            MainButtons.SetActive(true);
+            BackFromNewGame();
             return;
         }
     }
 
-    // ========================
+    // =============================================
     // MENU CHÍNH
-    // ========================
+    // =============================================
     public void OpenNewGameMenu()
     {
         MainButtons.SetActive(false);
@@ -94,16 +95,23 @@ public class MainMenuController : MonoBehaviour
         OnlineSubMenu.SetActive(true);
     }
 
-    public void BackToMainButtons()
+    // BACK từ NewGame → MainButtons
+    public void BackFromNewGame()
     {
-        MainButtons.SetActive(true);
         NewGameSubMenu.SetActive(false);
-        OnlineSubMenu.SetActive(false);
+        MainButtons.SetActive(true);
     }
 
-    // ========================
+    // BACK từ Online → NewGame
+    public void BackFromOnlineMenu()
+    {
+        OnlineSubMenu.SetActive(false);
+        NewGameSubMenu.SetActive(true);
+    }
+
+    // =============================================
     // QUIT POPUP
-    // ========================
+    // =============================================
     public void OpenQuitPopup()
     {
         QuitPopup.SetActive(true);
@@ -122,14 +130,13 @@ public class MainMenuController : MonoBehaviour
 #endif
     }
 
-    // ========================
+    // =============================================
     // OPTIONS
-    // ========================
+    // =============================================
     public void OpenOptions()
     {
         OptionsPanel.SetActive(true);
 
-        // Khởi tạo slider và text
         Slider_Volume.value = savedVolume;
         Text_Value.text = Mathf.RoundToInt(savedVolume * 100).ToString();
     }
@@ -138,7 +145,7 @@ public class MainMenuController : MonoBehaviour
     {
         currentVolume = Slider_Volume.value;
         Text_Value.text = Mathf.RoundToInt(currentVolume * 100).ToString();
-        AudioListener.volume = currentVolume; // áp dụng âm lượng tạm thời
+        AudioListener.volume = currentVolume;
     }
 
     public void SaveOptions()
@@ -146,7 +153,6 @@ public class MainMenuController : MonoBehaviour
         savedVolume = currentVolume;
         AudioListener.volume = savedVolume;
 
-        // Lưu vào PlayerPrefs
         PlayerPrefs.SetFloat("MasterVolume", savedVolume);
         PlayerPrefs.Save();
 
@@ -162,13 +168,13 @@ public class MainMenuController : MonoBehaviour
     {
         if (!saved)
         {
-            // Rollback âm lượng nếu Cancel
+            // rollback
             AudioListener.volume = savedVolume;
             Slider_Volume.value = savedVolume;
             Text_Value.text = Mathf.RoundToInt(savedVolume * 100).ToString();
         }
 
         OptionsPanel.SetActive(false);
-        MainButtons.SetActive(true); // bật lại menu chính
+        MainButtons.SetActive(true);
     }
 }
