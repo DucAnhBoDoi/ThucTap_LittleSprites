@@ -6,10 +6,14 @@ using TMPro;
 public class MainMenuController : MonoBehaviour
 {
     [Header("Menu Panels")]
-    public GameObject MainButtons;        // BTN_Continue, BTN_NewGame, BTN_Options, BTN_Exit
-    public GameObject NewGameSubMenu;
-    public GameObject OnlineSubMenu;
+    public GameObject MainButtons;        // Continue, NewGame, Options, Exit
+    public GameObject NewGameSubMenu;     // Local Coop + Online Coop
+    public GameObject Text_GameTitle;     // Tiêu đề game
     public GameObject OptionsPanel;
+
+    [Header("Lobby Panels")]
+    public GameObject LobbyOnlinePanel;
+    public GameObject LobbyLocalPanel;
 
     [Header("Quit Popup")]
     public GameObject QuitPopup;
@@ -32,10 +36,12 @@ public class MainMenuController : MonoBehaviour
         Slider_Volume.value = savedVolume;
         Text_Value.text = Mathf.RoundToInt(savedVolume * 100).ToString();
 
-        // Hiển thị menu chính
+        // Hiển thị menu chính, ẩn các menu khác
         MainButtons.SetActive(true);
+        Text_GameTitle.SetActive(true);
         NewGameSubMenu.SetActive(false);
-        OnlineSubMenu.SetActive(false);
+        LobbyOnlinePanel.SetActive(false);
+        LobbyLocalPanel.SetActive(false);
         OptionsPanel.SetActive(false);
         QuitPopup.SetActive(false);
     }
@@ -49,13 +55,13 @@ public class MainMenuController : MonoBehaviour
     }
 
     // =============================================
-    // ESCAPE / BACK LOGIC
+    // ESC / BACK LOGIC
     // =============================================
     void HandleEscape()
     {
         if (OptionsPanel.activeSelf)
         {
-            CloseOptions(false); // cancel
+            CloseOptions(false);
             return;
         }
 
@@ -65,9 +71,15 @@ public class MainMenuController : MonoBehaviour
             return;
         }
 
-        if (OnlineSubMenu.activeSelf)
+        if (LobbyOnlinePanel.activeSelf)
         {
-            BackFromOnlineMenu();
+            CloseLobbyOnline();
+            return;
+        }
+
+        if (LobbyLocalPanel.activeSelf)
+        {
+            CloseLobbyLocal();
             return;
         }
 
@@ -85,28 +97,51 @@ public class MainMenuController : MonoBehaviour
     {
         MainButtons.SetActive(false);
         NewGameSubMenu.SetActive(true);
-        OnlineSubMenu.SetActive(false);
     }
 
-    public void OpenOnlineMenu()
-    {
-        MainButtons.SetActive(false);
-        NewGameSubMenu.SetActive(false);
-        OnlineSubMenu.SetActive(true);
-    }
-
-    // BACK từ NewGame → MainButtons
     public void BackFromNewGame()
     {
         NewGameSubMenu.SetActive(false);
         MainButtons.SetActive(true);
+        Text_GameTitle.SetActive(true);
     }
 
-    // BACK từ Online → NewGame
-    public void BackFromOnlineMenu()
+    // =============================================
+    // LOBBY ONLINE
+    // =============================================
+    public void OpenLobbyOnline()
     {
-        OnlineSubMenu.SetActive(false);
+        LobbyOnlinePanel.SetActive(true);
+        NewGameSubMenu.SetActive(false);
+        MainButtons.SetActive(false);
+        Text_GameTitle.SetActive(false);
+    }
+
+    public void CloseLobbyOnline()
+    {
+        LobbyOnlinePanel.SetActive(false);
+        // Quay về menu con NewGame
         NewGameSubMenu.SetActive(true);
+        Text_GameTitle.SetActive(true);
+    }
+
+    // =============================================
+    // LOBBY LOCAL
+    // =============================================
+    public void OpenLobbyLocal()
+    {
+        LobbyLocalPanel.SetActive(true);
+        NewGameSubMenu.SetActive(false);
+        MainButtons.SetActive(false);
+        Text_GameTitle.SetActive(false);
+    }
+
+    public void CloseLobbyLocal()
+    {
+        LobbyLocalPanel.SetActive(false);
+        // Quay về menu con NewGame
+        NewGameSubMenu.SetActive(true);
+        Text_GameTitle.SetActive(true);
     }
 
     // =============================================
@@ -136,7 +171,6 @@ public class MainMenuController : MonoBehaviour
     public void OpenOptions()
     {
         OptionsPanel.SetActive(true);
-
         Slider_Volume.value = savedVolume;
         Text_Value.text = Mathf.RoundToInt(savedVolume * 100).ToString();
     }
@@ -152,10 +186,8 @@ public class MainMenuController : MonoBehaviour
     {
         savedVolume = currentVolume;
         AudioListener.volume = savedVolume;
-
         PlayerPrefs.SetFloat("MasterVolume", savedVolume);
         PlayerPrefs.Save();
-
         CloseOptions(true);
     }
 
@@ -168,7 +200,6 @@ public class MainMenuController : MonoBehaviour
     {
         if (!saved)
         {
-            // rollback
             AudioListener.volume = savedVolume;
             Slider_Volume.value = savedVolume;
             Text_Value.text = Mathf.RoundToInt(savedVolume * 100).ToString();
@@ -176,5 +207,6 @@ public class MainMenuController : MonoBehaviour
 
         OptionsPanel.SetActive(false);
         MainButtons.SetActive(true);
+        Text_GameTitle.SetActive(true);
     }
 }
