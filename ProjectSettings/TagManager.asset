@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags: []
   layers:
   - Default
@@ -38,6 +38,38 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Grass
+    uniqueID: 4104437903
+    locked: 0
+  - name: Wall
+    uniqueID: 3785011863
+    locked: 0
+  - name: Struct
+    uniqueID: 3033729595
+    locked: 0
+  - name: Props
+    uniqueID: 1566114751
+    locked: 0
+  - name: Player
+    uniqueID: 2697857217
+    locked: 0
+  - name: Plant
+    uniqueID: 4140631241
+    locked: 0
+  - name: WalkInFront
+    uniqueID: 1399625375
+    locked: 0
+  - name: Collision
+    uniqueID: 439943197
+    locked: 0
+  - name: WalkBehind
+    uniqueID: 2579911297
+    locked: 0
+  - name: Decor
+    uniqueID: 2147482571
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
+  m_RenderingLayers:
+  - Default
