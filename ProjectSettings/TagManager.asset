@@ -47,11 +47,11 @@ TagManager:
   - name: Struct
     uniqueID: 3033729595
     locked: 0
-  - name: Props
-    uniqueID: 1566114751
-    locked: 0
   - name: Player
     uniqueID: 2697857217
+    locked: 0
+  - name: Props
+    uniqueID: 1566114751
     locked: 0
   - name: Plant
     uniqueID: 4140631241
