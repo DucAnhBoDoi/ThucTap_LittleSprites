@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: TX Props with Shadow_365
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.Tilemaps.Tile
-  m_Sprite: {fileID: 719643677, guid: 774b571c867f20949b988832f8197ff5, type: 3}
+  m_Sprite: {fileID: -1769844930, guid: 774b571c867f20949b988832f8197ff5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
